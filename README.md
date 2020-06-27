@@ -50,4 +50,20 @@ The table schema adopted here is the start table with Facts and dimension table 
 1. `songplays` - records in log data assosicated with songs plays i.e records with page `Next Song`
     * songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
     
-<img src="img/star_schema_photo.jpg" alt="drawing" width="400"/>
+<img src="imgs/star_schema_photo.jpg" alt="drawing" width="400"/>
+
+## Tempalate
+* `udac_example_dag.py` contains the tasks and dependencies of the DAG. Located in the `dags` directory.
+* `create_tables.sql` contains the SQL queries used to create all the required tables in Redshift. ILocated in the `dag` directory.
+* `sql_queries.py` contains the SQL queries used in the ETL process. Located in the `plugins/helper` directory
+The following operators are be placed in the plugins/operators directory of your Airflow installation:
+
+`stage_redshift.py` contains `StageToRedshiftOperator` :  copies JSON data from S3 to staging tables in the Redshift data warehouse.
+`load_dimension.py` contains `LoadDimensionOperator` :  loads a dimension table from data in the staging table(s).
+`load_fact.py` contains `LoadFactOperator`: loads a fact table from data in the staging table(s).
+`data_quality.py` contains DataQualityOperator : which runs a data quality check
+
+### Successful dag
+After correctly placing the task dependencies with no errors from custom operators, sql queries or task, your result should look like this
+
+
