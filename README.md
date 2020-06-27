@@ -66,4 +66,4 @@ The following operators are be placed in the plugins/operators directory of your
 ### Successful dag
 After correctly placing the task dependencies with no errors from custom operators, sql queries or task, your result should look like this
 
-
+<img src="imgs/dags.png" alt="drawing" width="400"/>
