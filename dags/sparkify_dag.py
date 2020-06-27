@@ -107,26 +107,18 @@ run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
     dag=dag,
     redshift_conn_id="redshift",
-    tables=['songplays', 'users', 'songs', 'artists', 'time']
+    test_query = "SELECT COUNT(*) from songs where songid is null;",
+    expected_result=0
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 # Task dependency
-start_operator >> stage_events_to_redshift
-start_operator >> stage_songs_to_redshift
-
-stage_events_to_redshift >> load_songplays_table
-stage_songs_to_redshift >> load_songplays_table
-
-load_songplays_table >> load_user_dimension_table
-load_songplays_table >> load_song_dimension_table
-load_songplays_table >> load_artist_dimension_table
-load_songplays_table >> load_time_dimension_table
-
-load_user_dimension_table >> run_quality_checks
-load_song_dimension_table >> run_quality_checks
-load_artist_dimension_table >> run_quality_checks
-load_time_dimension_table >> run_quality_checks
-
+start_operator >> create_tables_task
+create_tables_task >> stage_events_to_redshift >> load_songplays_table
+create_tables_task >> stage_songs_to_redshift >> load_songplays_table
+load_songplays_table >> load_user_dimension_table >> run_quality_checks
+load_songplays_table >> load_song_dimension_table >> run_quality_checks
+load_songplays_table >> load_artist_dimension_table >> run_quality_checks
+load_songplays_table >> load_time_dimension_table >> run_quality_checks
 run_quality_checks >> end_operator
